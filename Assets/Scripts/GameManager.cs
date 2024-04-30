@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     {
         spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
         player = GameObject.Find("Player").GetComponent<Player>();
+
+        StartGame();
     }
 
     // Update is called once per frame
