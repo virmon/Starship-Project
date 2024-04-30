@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     private GameManager gameManager;
     [SerializeField] Rigidbody playerRb;
     [SerializeField] GameObject engineTrails;
-    
+
     private float horizontalInput;
     private float verticalInput;
 
@@ -61,6 +61,10 @@ public class PlayerController : MonoBehaviour
         {
             playerRb.AddForce(Vector3.right, ForceMode.Force);
             explosionParticle.Play();
+        }
+        else if (collision.gameObject.CompareTag("Asteroid"))
+        {
+            Destroy(collision.gameObject);
         }
     }
 

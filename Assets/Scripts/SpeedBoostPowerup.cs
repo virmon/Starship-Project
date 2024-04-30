@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // INHERITANCE
-public class PointsPowerup : Powerup
+public class SpeedBoostPowerup : Powerup
 {
     // POLYMORPHISM
     public override void InitializePowerup(GameObject playerGameObject)
@@ -11,7 +11,7 @@ public class PointsPowerup : Powerup
         AudioSource playerAudio = playerGameObject.GetComponent<AudioSource>();
         playerAudio.PlayOneShot(collectSound, 2.0f);
 
-        gameManager.UpdatePoints(pointValue);
+        playerGameObject.GetComponent<Player>().UseSpeedBoost();
     }
 
     public void OnTriggerEnter(Collider other)

@@ -3,15 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // INHERITANCE
-public class PointsPowerup : Powerup
+public class MissilePowerup : Powerup
 {
+    // Update is called once per frame
+    void Update()
+    {
+        FireProjectile();
+    }
+
+    private void FireProjectile()
+    {
+        if (gameObject.CompareTag("Projectile"))
+        {
+            transform.Translate(Vector3.up * projectileSpeed * Time.deltaTime);
+        }
+    }
+
     // POLYMORPHISM
     public override void InitializePowerup(GameObject playerGameObject)
     {
         AudioSource playerAudio = playerGameObject.GetComponent<AudioSource>();
         playerAudio.PlayOneShot(collectSound, 2.0f);
 
-        gameManager.UpdatePoints(pointValue);
+        playerGameObject.GetComponent<Player>().TakeMissile();
     }
 
     public void OnTriggerEnter(Collider other)

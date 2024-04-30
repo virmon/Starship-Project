@@ -7,16 +7,13 @@ public class Obstacle : MonoBehaviour
     private Rigidbody obstacle;
     private GameManager gameManager;
 
-    [SerializeField] float force = 5;
-
     private float minSpeed = 1;
     private float maxSpeed = 2;
     private float maxTorque = 10;
     private float xRange = 7;
     private float ySpawnPos = 7;
 
-    [SerializeField] AudioClip crashSound;
-    [SerializeField] ParticleSystem explosionParticle;
+    [SerializeField] float yOutOfBounds = -10;
 
     // Start is called before the first frame update
     void Start()
@@ -34,7 +31,7 @@ public class Obstacle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        DestroyOutOfBounds();
     }
 
     Vector3 RandomForce()
@@ -51,15 +48,7 @@ public class Obstacle : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            //Destroy(gameObject);
             gameManager.GameOver();
-
-            AudioSource playerAudio = collision.gameObject.GetComponent<AudioSource>();
-            playerAudio.PlayOneShot(crashSound, 2.0f);
-            //explosionParticle.Play();
-
-            //Rigidbody playerRb = collision.gameObject.GetComponent<Rigidbody>();
-            //playerRb.AddForce(Vector3.up * force, ForceMode.Impulse);
         }
 
         if (collision.gameObject.CompareTag("Asteroid"))
@@ -67,6 +56,20 @@ public class Obstacle : MonoBehaviour
             Debug.Log("Asteroids collided");
             // Destroy colliding Asteroids
             // Then Spawn smaller asteroids
+        }
+
+        if (collision.gameObject.CompareTag("Projectile"))
+        {
+            Destroy(gameObject);
+            Destroy(collision.gameObject);
+        }
+    }
+
+    private void DestroyOutOfBounds()
+    {
+        if (transform.position.y < yOutOfBounds)
+        {
+            Destroy(gameObject);
         }
     }
 }

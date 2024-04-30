@@ -7,94 +7,59 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI gameOverText;
-    public Button restartButton;
-    public GameObject titleScreen;
-    public GameObject gameOverScreen;
-    public Button startGameButton;
+    private SpawnManager spawnManager;
+    private Player player;
 
-    public GameObject starPrefab;
-    public GameObject asteroidPrefab;
+    [SerializeField] TextMeshProUGUI scoreText;
+    [SerializeField] TextMeshProUGUI gameOverText;
+    [SerializeField] Button startGameButton;
+    [SerializeField] Button restartButton;
+    [SerializeField] GameObject titleScreen;
+    [SerializeField] GameObject gameOverScreen;
 
-    public bool isGameActive;
-    private int score;
-    private float spawnRate = 2.0f;
-
-    public int starCount = 1;
-    public int waveNumber = 3;
+    public bool isGameActive { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
+        player = GameObject.Find("Player").GetComponent<Player>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        starCount = FindObjectsOfType<PointsPowerup>().Length;
-
-        if (starCount == 0 && isGameActive)
-        {
-            SpawnStar();
-        }
+        spawnManager.SpawnPowerups();
     }
 
-    IEnumerator SpawnObstacle()
+    public void InitializeGameData()
     {
-        while (isGameActive)
-        {
-            yield return new WaitForSeconds(spawnRate);
-            SpawnAsteroid(waveNumber);
-        }
-    }
-
-    public void SpawnStar()
-    {
-        Instantiate(starPrefab, GenerateSpawnPosition(), starPrefab.transform.rotation);
-    }
-
-    void SpawnAsteroid(int obstaclesToSpawn)
-    {
-        for (int i = 0; i < obstaclesToSpawn; i++)
-        {
-            Instantiate(asteroidPrefab);
-        }
-    }
-
-    private Vector3 GenerateSpawnPosition()
-    {
-        float spawnPosX = Random.Range(-7, 7);
-        float spawnPosY = Random.Range(-4, 4);
-
-        Vector3 randomPos = new Vector3(spawnPosX, spawnPosY, -2);
-
-        return randomPos;
+        isGameActive = true;
+        player.points = 0;
     }
 
     public void StartGame()
     {
-        isGameActive = true;
-        score = 0;
-        UpdateScore(score);
-        SpawnStar();
-        StartCoroutine(SpawnObstacle());
+        InitializeGameData();
 
+        spawnManager.SpawnPowerups();
+        StartCoroutine(spawnManager.SpawnObstacle());
+
+        scoreText.text = $"Score: {player.points}";
         gameOverScreen.gameObject.SetActive(false);
         titleScreen.gameObject.SetActive(false);
     }
 
-    public void UpdateScore(int scoreToAdd)
+    public void UpdatePoints(int pointsToAdd)
     {
-        score += scoreToAdd;
-        scoreText.text = "Score: " + score;
+        player.IncrementPoints(pointsToAdd);
+        scoreText.text = $"Score: {player.points}";
     }
 
     public void GameOver()
     {
-        gameOverScreen.gameObject.SetActive(true);
         isGameActive = false;
+        gameOverScreen.gameObject.SetActive(true);
     }
 
     public void RestartGame()
